@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Contratación Acuavalle 2024–2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,21 +21,6 @@
   --r: 10px;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0f1619; --surface: #162026; --surface-2: #1c2930; --line: #2a3a42;
-  --fg: #e8eef1; --fg-2: #a9b8c0; --fg-3: #82939c;
-  --accent: #4fb3d4; --accent-weak: #173845; --on-accent: #0b1418;
-  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
-  --good: #34c134; --warning: #fab219; --critical: #e66767;
-  color-scheme: dark; } }
-:root[data-theme="dark"] {
-  --bg: #0f1619; --surface: #162026; --surface-2: #1c2930; --line: #2a3a42;
-  --fg: #e8eef1; --fg-2: #a9b8c0; --fg-3: #82939c;
-  --accent: #4fb3d4; --accent-weak: #173845; --on-accent: #0b1418;
-  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
-  --good: #34c134; --warning: #fab219; --critical: #e66767;
-  color-scheme: dark; }
-
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--font-body); -webkit-text-size-adjust: 100%; }
@@ -52,7 +38,7 @@ button:hover, .btn:hover { border-color: var(--accent); }
 button.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.filters-bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; display: grid; gap: 8px; }
+.filters-bar { display: grid; gap: 8px; }
 .filters-toggle { width: 100%; justify-content: space-between; background: var(--surface); }
 .filters-toggle .count { background: var(--accent); color: var(--on-accent); border-radius: 99px; padding: 0 8px; font-size: 12px; }
 .filters { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; display: grid;
@@ -99,7 +85,6 @@ table, tbody, tr, td { display: block; }
 tr.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px 12px; padding: 12px; border-bottom: 1px solid var(--line);
   grid-template-areas: "num num tog" "con con con" "obj obj obj" "val fecha fecha" "tipo cat cat" "src src src"; }
 tr.row td.c-vig { display: none; }
-tr.row td.c-obj { -webkit-line-clamp: 3; line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
 tr.row td { padding: 0; border: 0; min-width: 0; }
 tr.row td[data-label]::before { content: attr(data-label); display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--fg-3); }
 tr.row td.c-toggle { grid-area: tog; } tr.row td.c-num { grid-area: num; font-weight: 600; font-size: 15px; }
@@ -150,7 +135,10 @@ footer p { margin: 6px 0; }
   tr.row td.c-src .btn { width: auto; }
   tr.row td.c-num { font-weight: 400; }
   tr.row:hover td { background: var(--surface-2); }
-  td.obj { max-width: 420px; }
+  td.obj { min-width: 340px; }
+  th[data-k="anio_publicacion"], td.c-vig { width: 64px; }
+  th[data-k="tipo_documento"], td.c-tipo { width: 112px; }
+  td.c-tipo .pill { white-space: normal; line-height: 1.3; }
   .pill { white-space: nowrap; } .pill.cat { white-space: normal; }
   th { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); font-size: 11px; text-transform: uppercase; letter-spacing: .05em;
     color: var(--fg-3); background: var(--surface-2); cursor: pointer; user-select: none; white-space: nowrap; position: sticky; top: 0; }
@@ -196,7 +184,7 @@ footer p { margin: 6px 0; }
   <button class="filters-toggle" id="btn-filtros" type="button" aria-expanded="false" aria-controls="panel-filtros"><span>Filtros</span> <span class="count" id="n-filtros" hidden></span></button>
   <section class="filters" id="panel-filtros" aria-label="Filtros" data-open="false">
     <div class="f"><label for="f-anio">Vigencia (publicación)</label><select id="f-anio"></select></div>
-    <div class="f"><label for="f-tipo">Tipo de documento</label><select id="f-tipo"></select></div>
+    <div class="f"><label for="f-tipo">Tipo de contrato</label><select id="f-tipo"></select></div>
     <div class="f"><label for="f-cat">Categoría de gasto</label><select id="f-cat"></select></div>
     <div class="f"><label for="f-con">Contratista</label><input id="f-con" list="dl-con" placeholder="Nombre o NIT"><datalist id="dl-con"></datalist></div>
     <div class="f wide"><label for="f-q">Buscar en objeto, obligaciones y número</label><input id="f-q" type="search" placeholder="p. ej. tubería, PTAP, combustible, 131-24"></div>
@@ -229,11 +217,11 @@ footer p { margin: 6px 0; }
       <div class="chart-box"><canvas id="ch-mes" aria-label="Valor firmado por mes"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-head"><h2>Por tipo de documento</h2>
+      <div class="card-head"><h2>Por tipo de contrato</h2>
         <div class="seg" role="group" aria-label="Medida"><button type="button" data-m2="valor" aria-pressed="true">Valor</button><button type="button" data-m2="n" aria-pressed="false">Cantidad</button></div></div>
       <p class="total" id="tot-tipo"></p>
       <p class="hint">Clic en una barra para filtrar por ese tipo.</p>
-      <div class="chart-box"><canvas id="ch-tipo" aria-label="Valor por tipo de documento"></canvas></div>
+      <div class="chart-box"><canvas id="ch-tipo" aria-label="Valor por tipo de contrato"></canvas></div>
     </div>
     <div class="card span2">
       <div class="card-head"><h2>Contratistas con mayor valor</h2></div>
@@ -254,7 +242,7 @@ footer p { margin: 6px 0; }
       <table id="tbl">
         <thead><tr>
           <th scope="col" data-k="_" aria-label="Detalle"></th>
-          <th scope="col" data-k="anio_publicacion">Vigencia</th>
+          <th scope="col" data-k="anio_publicacion">Vig.</th>
           <th scope="col" data-k="tipo_documento">Tipo</th>
           <th scope="col" data-k="numero">Número</th>
           <th scope="col" data-k="fecha_firma">Firma</th>
@@ -359,6 +347,18 @@ const META = {"fecha": "06/10/2026", "excluidos": "Este tablero incluye solo con
   const mill = v => "$" + fmt.format(Math.round(v / 1e6)) + " M";
   const narrow = () => innerWidth < 600;
   // Etiqueta al final de cada barra: valor y porcentaje del total
+  // Nombre completo de la categoría debajo de su barra (con salto de línea si no cabe)
+  const namesBelow = { id: "namesBelow", afterDatasetsDraw(chart) {
+    if (!chart.options.plugins.namesBelow) return;
+    const { ctx, chartArea } = chart, meta = chart.getDatasetMeta(0), w = chartArea.right - chartArea.left;
+    ctx.save(); ctx.font = `500 ${narrow() ? 11 : 12}px ${css("--font-body")}`; ctx.fillStyle = css("--fg"); ctx.textBaseline = "top";
+    meta.data.forEach((bar, i) => {
+      const words = String(chart.data.labels[i]).split(" "); let line = "", y = bar.y + bar.height / 2 + 4; const lines = [];
+      words.forEach(wd => { const t = line ? line + " " + wd : wd; if (ctx.measureText(t).width > w && line) { lines.push(line); line = wd; } else line = t; });
+      lines.push(line);
+      lines.slice(0, 2).forEach((l, k) => ctx.fillText(l, chartArea.left, y + k * (narrow() ? 13 : 14)));
+    });
+    ctx.restore(); } };
   const barLabels = { id: "barLabels", afterDatasetsDraw(chart) {
     const texts = chart.options.plugins.barLabels && chart.options.plugins.barLabels.texts; if (!texts) return;
     const { ctx } = chart, meta = chart.getDatasetMeta(0);
@@ -385,7 +385,7 @@ const META = {"fecha": "06/10/2026", "excluidos": "Este tablero incluye solo con
     if (c) c.destroy();
     charts[id] = new Chart(document.getElementById(id), { type, data, options, plugins: plugins || [] });
   }
-  function barChart(id, entries, measure, onClick, selected, limit, totEl, totLabel) {
+  function barChart(id, entries, measure, onClick, selected, limit, totEl, totLabel, below) {
     const totV = entries.reduce((s, e) => s + e[1].valor, 0), totN = entries.reduce((s, e) => s + e[1].n, 0);
     const tot = measure === "valor" ? totV : totN;
     entries.sort((a, b) => b[1][measure] - a[1][measure]);
@@ -393,6 +393,11 @@ const META = {"fecha": "06/10/2026", "excluidos": "Este tablero incluye solo con
     const labels = shown.map(e => e[0]), data = shown.map(e => e[1][measure]);
     const o = baseOpts(true, measure === "valor");
     o.layout = { padding: { right: narrow() ? 96 : 132 } };
+    if (below) {
+      o.plugins.namesBelow = true;
+      o.scales.y.ticks.display = false; o.scales.y.border = { display: false }; o.scales.x.grid = { display: false };
+      document.getElementById(id).parentElement.style.height = (shown.length * 56 + 40) + "px";
+    }
     o.plugins.barLabels = { texts: shown.map(e => (measure === "valor" ? mill(e[1].valor) : fmt.format(e[1].n)) + " · " + pct(e[1][measure], tot)) };
     o.plugins.tooltip.callbacks = {
       label: ctx => { const e = shown[ctx.dataIndex][1]; return [`Valor: ${money(e.valor)} (${pct(e.valor, totV)} del total)`, `Contratos: ${fmt.format(e.n)} (${pct(e.n, totN)} del total)`]; },
@@ -401,7 +406,8 @@ const META = {"fecha": "06/10/2026", "excluidos": "Este tablero incluye solo con
     o.onHover = (ev, els) => { ev.native.target.style.cursor = els.length ? "pointer" : "default"; };
     const base = css("--series-1");
     const colors = labels.map(l => !selected || l === selected ? base : base + "55");
-    draw(id, "bar", { labels, datasets: [{ data, backgroundColor: colors, hoverBackgroundColor: base, borderRadius: 4, borderSkipped: "start", maxBarThickness: 22, categoryPercentage: 0.8, barPercentage: 0.9 }] }, o, [barLabels]);
+    const geom = below ? { maxBarThickness: 16, categoryPercentage: 0.95, barPercentage: 0.5 } : { maxBarThickness: 22, categoryPercentage: 0.8, barPercentage: 0.9 };
+    draw(id, "bar", { labels, datasets: [{ data, backgroundColor: colors, hoverBackgroundColor: base, borderRadius: 4, borderSkipped: "start", ...geom }] }, o, [barLabels, namesBelow]);
     if (totEl) {
       const sV = shown.reduce((s, e) => s + e[1].valor, 0);
       $(totEl).innerHTML = limit && entries.length > limit
@@ -429,9 +435,9 @@ const META = {"fecha": "06/10/2026", "excluidos": "Este tablero incluye solo con
     $("#tot-mes").innerHTML = years.length ? years.map(y => `${y}: <strong>${money(totY[y])}</strong> (${fmt.format(cntY[y])})`).join(" · ") : "Sin fechas de firma en la selección";
   }
   function drawCharts(rs) {
-    barChart("ch-cat", groupBy(rs, "categoria_gasto"), state.m, v => { $("#f-cat").value = $("#f-cat").value === v ? "" : v; update(); }, $("#f-cat").value, 0, "#tot-cat", "categorías");
+    barChart("ch-cat", groupBy(rs, "categoria_gasto"), state.m, v => { $("#f-cat").value = $("#f-cat").value === v ? "" : v; update(); }, $("#f-cat").value, 0, "#tot-cat", "categorías", true);
     barChart("ch-tipo", groupBy(rs, "tipo_documento"), state.m2, v => { $("#f-tipo").value = $("#f-tipo").value === v ? "" : v; update(); }, $("#f-tipo").value, 0, "#tot-tipo", "tipos");
-    barChart("ch-con", groupBy(rs.filter(r => r.contratista), "contratista"), "valor", v => { $("#f-con").value = $("#f-con").value === v ? "" : v; update(); }, $("#f-con").value, 15, "#tot-con", "contratistas");
+    barChart("ch-con", groupBy(rs.filter(r => r.contratista), "contratista"), "valor", v => { $("#f-con").value = $("#f-con").value === v ? "" : v; update(); }, $("#f-con").value, 15, "#tot-con", "contratistas", true);
     monthChart(rs);
   }
 
@@ -481,7 +487,7 @@ const META = {"fecha": "06/10/2026", "excluidos": "Este tablero incluye solo con
       <td class="date c-num">${esc(r.numero)}</td>
       <td class="date c-fecha" data-label="Firma">${esc(r.fecha_firma || "—")}</td>
       <td class="c-con" data-label="Contratista">${esc(r.contratista || "—")}</td>
-      <td class="obj c-obj" data-label="Objeto">${esc((r.objeto || "—").slice(0, 220))}${(r.objeto || "").length > 220 ? "…" : ""}</td>
+      <td class="obj c-obj" data-label="Objeto">${esc(r.objeto || "—")}</td>
       <td class="num c-val" data-label="Valor">${money(r.valor)}${vflag(r)}</td>
       <td class="c-cat" data-label="Categoría"><span class="pill cat">${esc(r.categoria_gasto)}</span></td>
       <td class="c-src"><a class="btn" href="${esc(r.url_fuente)}" target="_blank" rel="noopener" title="Abrir el documento original en acuavalle.gov.co">Ver PDF ↗</a></td>
@@ -514,11 +520,9 @@ const META = {"fecha": "06/10/2026", "excluidos": "Este tablero incluye solo con
   $("#pager").addEventListener("click", e => { const b = e.target.closest("button[data-p]"); if (!b) return; state.page += +b.dataset.p; table(current); });
   document.querySelectorAll("[data-m]").forEach(b => b.addEventListener("click", () => { state.m = b.dataset.m; document.querySelectorAll("[data-m]").forEach(x => x.setAttribute("aria-pressed", x === b)); drawCharts(current); }));
   document.querySelectorAll("[data-m2]").forEach(b => b.addEventListener("click", () => { state.m2 = b.dataset.m2; document.querySelectorAll("[data-m2]").forEach(x => x.setAttribute("aria-pressed", x === b)); drawCharts(current); }));
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => drawCharts(current));
-  new MutationObserver(() => drawCharts(current)).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
   // ---- exportación
-  const COLS = [["anio_publicacion", "Vigencia publicación"], ["tipo_documento", "Tipo de documento"], ["numero", "Número"],
+  const COLS = [["anio_publicacion", "Vigencia publicación"], ["tipo_documento", "Tipo de contrato"], ["numero", "Número"],
     ["entidad_contratante", "Entidad(es) contratante(s)"], ["contratista", "Contratista(s)"], ["nit_contratista", "NIT contratista"],
     ["fecha_firma", "Fecha firma"], ["fecha_inicio", "Fecha inicio"], ["fecha_inicio_nota", "Nota fecha inicio"], ["fecha_fin", "Fecha fin"],
     ["plazo", "Plazo (texto)"], ["objeto", "Objeto"], ["sintesis_obligaciones", "Síntesis obligaciones específicas"],
